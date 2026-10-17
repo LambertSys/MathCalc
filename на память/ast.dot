@@ -1,0 +1,183 @@
+digraph ast {
+a0 [label="Function Decl 'G' : uint32" ];
+a1 [label="Function Arg 'b' : int32" ];
+a2 [label="Seq" ];
+a3 [label="Return" ];
+a4 [label="Function Decl 'min' : int32" ];
+a5 [label="Function Arg 'a' : int32" ];
+a6 [label="Function Arg 'b' : int32" ];
+a7 [label="Seq" ];
+a8 [label="If" ];
+a9 [label="0" ];
+a10 [label="Seq" ];
+a11 [label="Return" ];
+a12 [label="+" ];
+a13 [label="a" ];
+a15 [label="1" ];
+a17 [label="Seq" ];
+a18 [label="Return" ];
+a19 [label="1" ];
+a21 [label="Function Decl 'main' : int32" ];
+a22 [label="Function Arg 'f' : int32" ];
+a23 [label="Function Arg 'B' : uint32" ];
+a24 [label="Seq" ];
+a25 [label="Stmt" ];
+a26 [label="Assign (=)" ];
+a27 [label="not_found : int32" ];
+a29 [label="<" ];
+a30 [label="+" ];
+a31 [label="1" ];
+a33 [label="0" ];
+a35 [label="*" ];
+a36 [label="1" ];
+a38 [label="6" ];
+a40 [label="Seq" ];
+a41 [label="Stmt" ];
+a42 [label="Assign (=)" ];
+a43 [label="i : int32" ];
+a45 [label="0" ];
+a47 [label="Seq" ];
+a48 [label="Stmt" ];
+a49 [label="Assign (=)" ];
+a50 [label="b : reference : int32" ];
+a52 [label="1" ];
+a54 [label="Seq" ];
+a55 [label="Stmt" ];
+a56 [label="Assign (=)" ];
+a57 [label="c : int32" ];
+a59 [label="+" ];
+a60 [label="+" ];
+a61 [label="b" ];
+a63 [label="*" ];
+a64 [label="6" ];
+a66 [label="y" ];
+a68 [label="f" ];
+a70 [label="Seq" ];
+a71 [label="Stmt" ];
+a72 [label="Assign (=)" ];
+a73 [label="g : uint32" ];
+a75 [label="Function Call 'min'" ];
+a76 [label="Arg" ];
+a77 [label="c" ];
+a79 [label="Arg" ];
+a80 [label="1" ];
+a82 [label="Seq" ];
+a83 [label="Assign (=)" ];
+a84 [label="i" ];
+a86 [label="-" ];
+a87 [label="+" ];
+a88 [label="g" ];
+a90 [label="5" ];
+a92 [label="*" ];
+a93 [label="8" ];
+a95 [label="not_found" ];
+a97 [label="Seq" ];
+a98 [label="Assign (=)" ];
+a99 [label="not_found" ];
+a101 [label="0" ];
+a103 [label="Function Decl 'b' : void" ];
+a104 [label="Seq" ];
+a105 [label="Stmt" ];
+a106 [label="Assign (=)" ];
+a107 [label="h : int32" ];
+a109 [label="+" ];
+a110 [label="0" ];
+a112 [label="/" ];
+a113 [label="7" ];
+a115 [label="Function Call 'main'" ];
+a116 [label="Arg" ];
+a117 [label="1" ];
+a119 [label="Arg" ];
+a120 [label="5" ];
+a122 [label="Arg" ];
+a123 [label="5" ];
+
+a0->a1
+a0->a2
+a2->a3
+a4->a5
+a4->a6
+a4->a7
+a7->a8
+a8->a9
+a8->a10
+a10->a11
+a11->a12
+a12->a13
+a12->a15
+a7->a17
+a17->a18
+a18->a19
+a21->a22
+a21->a23
+a21->a24
+a24->a25
+a25->a26
+a26->a27
+a26->a29
+a29->a30
+a30->a31
+a30->a33
+a29->a35
+a35->a36
+a35->a38
+a24->a40
+a40->a41
+a41->a42
+a42->a43
+a42->a45
+a40->a47
+a47->a48
+a48->a49
+a49->a50
+a49->a52
+a47->a54
+a54->a55
+a55->a56
+a56->a57
+a56->a59
+a59->a60
+a60->a61
+a60->a63
+a63->a64
+a63->a66
+a59->a68
+a54->a70
+a70->a71
+a71->a72
+a72->a73
+a72->a75
+a75->a76
+a76->a77
+a76->a79
+a79->a80
+a70->a82
+a82->a83
+a83->a84
+a83->a86
+a86->a87
+a87->a88
+a87->a90
+a86->a92
+a92->a93
+a92->a95
+a82->a97
+a97->a98
+a98->a99
+a98->a101
+a103->a104
+a104->a105
+a105->a106
+a106->a107
+a106->a109
+a109->a110
+a109->a112
+a112->a113
+a112->a115
+a115->a116
+a116->a117
+a116->a119
+a119->a120
+a119->a122
+a122->a123
+}

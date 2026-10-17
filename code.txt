@@ -1,0 +1,40 @@
+uint G(int b)
+{
+	return;
+}
+
+int min(int a, int b)
+{
+	if(0) 
+	{  
+		return a + 1;
+	}
+
+	return 1;
+}
+
+uint main(int f, uint B)
+{
+	int not_found = (uint)(1 + 0 < 1 * 6);
+	int i = 0;
+	int& b = 1;
+	int c = (int)b + 6 * y + f;
+	uint g = min(c, 1);
+
+	if(not_found > 20)
+	{
+		i = g + 5 - 8 * not_found;
+		return 0;
+	}
+	else
+	{
+ 		int lol = 10;
+	}
+	
+	not_found = 0;
+}
+
+void b()
+{
+int h = 0 + 7 / main(1, 5, 5);
+}
