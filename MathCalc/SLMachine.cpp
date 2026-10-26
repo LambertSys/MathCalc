@@ -105,9 +105,13 @@ namespace slm
 
 	VMStatus VMachine::Run()
 	{
-		callDepth_ = 0;
+		callDepth_ = 1;
 
-		while ((static_cast<uint64>(pc_) * INSTRUCTION_SIZE) < codeSize_)
+		// Для entry функции должен быть ret, хоть и управление никуда не будет возвращаться. 4 байта будут заняты пустотой, 
+		// чтоб ret от entry-функции не увел sp в переполнение
+		sp_ = 4;
+
+		while (callDepth_ > 0)
 		{
 			uint32 instr = FetchInstruction();
 

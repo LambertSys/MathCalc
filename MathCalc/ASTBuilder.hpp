@@ -79,8 +79,9 @@ namespace ast
 
 	private:
 		std::vector<ParseError> errors_;
-		std::vector<Token*> tokens;
+		std::vector<Token*> tokens_;
 
+		// TODO использовать bracketsLevel вместо этого
 		bool isParsingBrackets = false;
 
 		BlockContext blockContext_;

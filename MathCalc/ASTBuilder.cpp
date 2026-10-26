@@ -24,12 +24,12 @@ namespace ast
 	{
 		std::cout << "\nGetDigit at tokenIndex = " + std::to_string(tokenIndex);
 
-		if (tokenIndex == tokens.size())
+		if (tokenIndex == tokens_.size())
 		{
 			return nullptr;
 		}
 
-		if (tokens[tokenIndex]->GetType() == TokenType::OpenBracket)
+		if (tokens_[tokenIndex]->GetType() == TokenType::OpenBracket)
 		{
 			isParsingBrackets = true;
 
@@ -44,9 +44,9 @@ namespace ast
 				return nullptr;
 			}
 
-			if (tokenIndex == tokens.size() || tokens[tokenIndex]->GetType() != TokenType::CloseBracket)
+			if (tokenIndex == tokens_.size() || tokens_[tokenIndex]->GetType() != TokenType::CloseBracket)
 			{
-				OutputError(tokens[tokenIndex], "Close backet is missed");
+				OutputError(tokens_[tokenIndex], "Close backet is missed");
 
 				return nullptr;
 			}
@@ -62,21 +62,21 @@ namespace ast
 
 		Node* ret = nullptr;
 
-		switch (tokens[tokenIndex]->GetType())
+		switch (tokens_[tokenIndex]->GetType())
 		{
 		case TokenType::Digit:
-			ret = new ValueNode(tokens[tokenIndex]->AsToken<DigitToken>()->value);
+			ret = new ValueNode(tokens_[tokenIndex]->AsToken<DigitToken>()->value);
 			break;
 		case TokenType::Id:
-			ret = new VarNode(tokens[tokenIndex]->AsToken<IdToken>()->idName);
+			ret = new VarNode(tokens_[tokenIndex]->AsToken<IdToken>()->idName);
 			break;
 		default:
-			OutputError(tokens[tokenIndex], "Excepted value or expression");
+			OutputError(tokens_[tokenIndex], "Excepted value or expression");
 
 			return nullptr;
 		}
 
-		ret->SetSourceLocation(tokens[tokenIndex]->location);
+		ret->SetSourceLocation(tokens_[tokenIndex]->location);
 
 		tokenIndex++;
 
@@ -88,41 +88,41 @@ namespace ast
 		CastNode* cast = nullptr;
 
 		// считываем '(' <type> ')'
-		if (tokens[tokenIndex]->GetType() == TokenType::OpenBracket)
+		if (tokens_[tokenIndex]->GetType() == TokenType::OpenBracket)
 		{			
 			// TODO если в выражениях будут какие-то ключевые слова (см static_cast) кроме конверсий, то тут случится syntax error
-			if (tokens[tokenIndex+1]->GetType() != TokenType::Keyword)
+			if (tokens_[tokenIndex+1]->GetType() != TokenType::Keyword)
 			{
 				return GetDigit(tokenIndex);
 			}
 
-			SourceLocation loc = tokens[tokenIndex]->location;
+			SourceLocation loc = tokens_[tokenIndex]->location;
 
 			// перепрыгиваем (
 			tokenIndex++;
 
 			// TODO учитывать и ID токены
-			KeywordToken* tok = tokens[tokenIndex]->AsToken<KeywordToken>();
+			KeywordToken* tok = tokens_[tokenIndex]->AsToken<KeywordToken>();
 
 			std::optional<DataType> typeTo = GetTypeFromKeyword(tok);
 
 			if (!typeTo.has_value())
 			{
-				OutputError(tokens[tokenIndex], "Excepted Type name");
+				OutputError(tokens_[tokenIndex], "Excepted Type name");
 
 				return nullptr;
 			}
 
 			if (typeTo.value() == DataType::Void)
 			{
-				OutputError(tokens[tokenIndex], "Conversion to void not allowed");
+				OutputError(tokens_[tokenIndex], "Conversion to void not allowed");
 			}
 
 			tokenIndex++;
 
-			if (tokens[tokenIndex]->GetType() != TokenType::CloseBracket)
+			if (tokens_[tokenIndex]->GetType() != TokenType::CloseBracket)
 			{
-				OutputError(tokens[tokenIndex], "Excepted )");
+				OutputError(tokens_[tokenIndex], "Excepted )");
 
 				return nullptr;
 			}
@@ -172,7 +172,7 @@ namespace ast
 			return nullptr;
 		}
 
-		if (tokenIndex == tokens.size())
+		if (tokenIndex == tokens_.size())
 		{
 			return nullptr;
 		}
@@ -181,7 +181,7 @@ namespace ast
 
 		while (!isError)
 		{
-			switch (tokens[tokenIndex]->GetType())
+			switch (tokens_[tokenIndex]->GetType())
 			{
 			case TokenType::CloseBracket:
 				tokenIndex++;
@@ -190,7 +190,7 @@ namespace ast
 				return rootArg;
 			case TokenType::Operator:
 			{
-				OperatorToken* op = tokens[tokenIndex]->AsToken<OperatorToken>();
+				OperatorToken* op = tokens_[tokenIndex]->AsToken<OperatorToken>();
 
 				if (op->opType != OperatorTokenType::Comma)
 				{
@@ -220,7 +220,7 @@ namespace ast
 			}
 		}
 
-		OutputError(tokens[tokenIndex], "Excepted comma or close bracket after arguments");
+		OutputError(tokens_[tokenIndex], "Excepted comma or close bracket after arguments");
 
 		return nullptr;
 	}
@@ -229,15 +229,15 @@ namespace ast
 	{
 		std::cout << "\nGetValue at tokenIndex = " + std::to_string(tokenIndex);
 
-		switch (tokens[tokenIndex]->GetType())
+		switch (tokens_[tokenIndex]->GetType())
 		{
 		case TokenType::Id:
 		{
-			SourceLocation funcLoc = tokens[tokenIndex]->location;
+			SourceLocation funcLoc = tokens_[tokenIndex]->location;
 
-			std::string name = tokens[tokenIndex]->AsToken<IdToken>()->idName;
+			std::string name = tokens_[tokenIndex]->AsToken<IdToken>()->idName;
 
-			if (tokens[tokenIndex + 1]->GetType() == TokenType::OpenBracket)
+			if (tokens_[tokenIndex + 1]->GetType() == TokenType::OpenBracket)
 			{
 				// чтоб перепрыгнуть имя токена и скобку
 				tokenIndex++;
@@ -291,7 +291,7 @@ namespace ast
 			return nullptr;
 		}
 
-		OutputError(tokens[tokenIndex], "Excepted digit or expression");
+		OutputError(tokens_[tokenIndex], "Excepted digit or expression");
 
 		return nullptr;
 	}
@@ -302,10 +302,10 @@ namespace ast
 
 		Node* value;
 
-		if (tokens[tokenIndex]->GetType() == TokenType::Operator &&
-			tokens[tokenIndex]->AsToken<OperatorToken>()->opType == OperatorTokenType::UnaryMinus)
+		if (tokens_[tokenIndex]->GetType() == TokenType::Operator &&
+			tokens_[tokenIndex]->AsToken<OperatorToken>()->opType == OperatorTokenType::UnaryMinus)
 		{
-			SourceLocation location = tokens[tokenIndex]->location;
+			SourceLocation location = tokens_[tokenIndex]->location;
 
 			tokenIndex++;
 
@@ -331,7 +331,7 @@ namespace ast
 			return nullptr;
 		}
 
-		if (tokenIndex == tokens.size())
+		if (tokenIndex == tokens_.size())
 		{
 			return value;
 		}
@@ -346,12 +346,12 @@ namespace ast
 		Rest empty{};
 		empty.expr = inh.inh;
 
-		if (tokenIndex == tokens.size())
+		if (tokenIndex == tokens_.size())
 		{
 			return empty;
 		}
 
-		if (tokens[tokenIndex]->GetType() == TokenType::Semicolon)
+		if (tokens_[tokenIndex]->GetType() == TokenType::Semicolon)
 		{
 			return empty;
 		}
@@ -360,11 +360,11 @@ namespace ast
 
 		SourceLocation location;
 
-		if (tokens[tokenIndex]->GetType() == TokenType::Operator)
+		if (tokens_[tokenIndex]->GetType() == TokenType::Operator)
 		{
-			location = tokens[tokenIndex]->location;
+			location = tokens_[tokenIndex]->location;
 
-			switch (tokens[tokenIndex]->AsToken<OperatorToken>()->opType)
+			switch (tokens_[tokenIndex]->AsToken<OperatorToken>()->opType)
 			{
 			case OperatorTokenType::Multiply:
 				tokenIndex++;
@@ -384,7 +384,7 @@ namespace ast
 				{
 					empty.expr = nullptr;
 
-					OutputError(tokens[tokenIndex], "Excepted * or /");
+					OutputError(tokens_[tokenIndex], "Excepted * or /");
 
 					return empty;
 				}
@@ -396,13 +396,13 @@ namespace ast
 				return empty;
 			}
 		}
-		else if (tokens[tokenIndex]->GetType() == TokenType::CloseBracket || tokens[tokenIndex]->GetType() == TokenType::OpenBracket)
+		else if (tokens_[tokenIndex]->GetType() == TokenType::CloseBracket || tokens_[tokenIndex]->GetType() == TokenType::OpenBracket)
 		{
 			if (blockContext_.bracketsLevel == 0)
 			{
 				empty.expr = nullptr;
 
-				OutputError(tokens[tokenIndex], "Close Bracket without Open Bracket");
+				OutputError(tokens_[tokenIndex], "Close Bracket without Open Bracket");
 			}
 
 			return empty;
@@ -430,7 +430,7 @@ namespace ast
 		op->SetLeftOperand(inh.inh);
 		op->SetRightOperand(factor);
 
-		if (tokens[tokenIndex]->GetType() == TokenType::Semicolon)
+		if (tokens_[tokenIndex]->GetType() == TokenType::Semicolon)
 		{
 			rest.expr = op;
 
@@ -463,12 +463,12 @@ namespace ast
 			return nullptr;
 		}
 
-		if (tokenIndex == tokens.size())
+		if (tokenIndex == tokens_.size())
 		{
 			return digit;
 		}
 
-		if (tokens[tokenIndex]->GetType() == TokenType::Semicolon)
+		if (tokens_[tokenIndex]->GetType() == TokenType::Semicolon)
 		{
 			return digit;
 		}
@@ -495,7 +495,7 @@ namespace ast
 
 		Node* term = nullptr;
 
-		if (tokenIndex == tokens.size())
+		if (tokenIndex == tokens_.size())
 		{
 			empty.expr = nullptr;
 
@@ -506,11 +506,11 @@ namespace ast
 
 		SourceLocation location;
 
-		if (tokens[tokenIndex]->GetType() == TokenType::Operator)
+		if (tokens_[tokenIndex]->GetType() == TokenType::Operator)
 		{
-			location = tokens[tokenIndex]->location;
+			location = tokens_[tokenIndex]->location;
 
-			switch (tokens[tokenIndex]->AsToken<OperatorToken>()->opType)
+			switch (tokens_[tokenIndex]->AsToken<OperatorToken>()->opType)
 			{
 			case OperatorTokenType::Plus:
 				tokenIndex++;
@@ -529,7 +529,7 @@ namespace ast
 				{
 					empty.expr = nullptr;
 
-					OutputError(tokens[tokenIndex], "Excepted binary operator");
+					OutputError(tokens_[tokenIndex], "Excepted binary operator");
 
 					return empty;
 				}
@@ -540,20 +540,20 @@ namespace ast
 				return empty;
 			}
 		}
-		else if (tokens[tokenIndex]->GetType() == TokenType::CloseBracket || tokens[tokenIndex]->GetType() == TokenType::OpenBracket)
+		else if (tokens_[tokenIndex]->GetType() == TokenType::CloseBracket || tokens_[tokenIndex]->GetType() == TokenType::OpenBracket)
 		{
 			if (blockContext_.bracketsLevel == 0)
 			{
 				empty.expr = nullptr;
 
-				OutputError(tokens[tokenIndex], "Close Bracket without Open Bracket");
+				OutputError(tokens_[tokenIndex], "Close Bracket without Open Bracket");
 			}
 
 			return empty;
 		}
 		else
 		{
-			OutputError(tokens[tokenIndex], "Excepted binary operator");
+			OutputError(tokens_[tokenIndex], "Excepted binary operator");
 
 			empty.expr = nullptr;
 
@@ -574,14 +574,14 @@ namespace ast
 		expr->SetLeftOperand(inh.inh);
 		expr->SetRightOperand(term);
 
-		if (tokenIndex == tokens.size())
+		if (tokenIndex == tokens_.size())
 		{
 			rest.expr = expr;
 
 			return rest;
 		}
 
-		if (tokens[tokenIndex]->GetType() == TokenType::Semicolon)
+		if (tokens_[tokenIndex]->GetType() == TokenType::Semicolon)
 		{
 			rest.expr = expr;
 
@@ -623,7 +623,7 @@ namespace ast
 			return nullptr;
 		}
 
-		if (tokens[tokenIndex]->GetType() == TokenType::Semicolon)
+		if (tokens_[tokenIndex]->GetType() == TokenType::Semicolon)
 		{
 			return term;
 		}
@@ -660,12 +660,12 @@ namespace ast
 		Rest empty{};
 		empty.expr = inh.inh;
 
-		if (tokenIndex == tokens.size())
+		if (tokenIndex == tokens_.size())
 		{
 			return empty;
 		}
 
-		if (tokens[tokenIndex]->GetType() == TokenType::Semicolon)
+		if (tokens_[tokenIndex]->GetType() == TokenType::Semicolon)
 		{
 			return empty;
 		}
@@ -674,11 +674,11 @@ namespace ast
 
 		SourceLocation location;
 
-		if (tokens[tokenIndex]->GetType() == TokenType::Operator)
+		if (tokens_[tokenIndex]->GetType() == TokenType::Operator)
 		{
-			location = tokens[tokenIndex]->location;
+			location = tokens_[tokenIndex]->location;
 
-			switch (tokens[tokenIndex]->AsToken<OperatorToken>()->opType)
+			switch (tokens_[tokenIndex]->AsToken<OperatorToken>()->opType)
 			{
 			case OperatorTokenType::Less:
 				tokenIndex++;
@@ -710,7 +710,7 @@ namespace ast
 				{
 					empty.expr = nullptr;
 
-					OutputError(tokens[tokenIndex], "Excepted operator");
+					OutputError(tokens_[tokenIndex], "Excepted operator");
 
 					return empty;
 				}
@@ -722,13 +722,13 @@ namespace ast
 				return empty;
 			}
 		}
-		else if (tokens[tokenIndex]->GetType() == TokenType::CloseBracket || tokens[tokenIndex]->GetType() == TokenType::OpenBracket)
+		else if (tokens_[tokenIndex]->GetType() == TokenType::CloseBracket || tokens_[tokenIndex]->GetType() == TokenType::OpenBracket)
 		{
 			if (blockContext_.bracketsLevel == 0)
 			{
 				empty.expr = nullptr;
 
-				OutputError(tokens[tokenIndex], "Close Bracket without Open Bracket");
+				OutputError(tokens_[tokenIndex], "Close Bracket without Open Bracket");
 			}
 
 			return empty;
@@ -756,7 +756,7 @@ namespace ast
 		Rest rest{};
 		rest.inh = op;
 
-		if (tokens[tokenIndex]->GetType() == TokenType::Semicolon || tokens[tokenIndex]->GetType() == TokenType::CloseBracket)
+		if (tokens_[tokenIndex]->GetType() == TokenType::Semicolon || tokens_[tokenIndex]->GetType() == TokenType::CloseBracket)
 		{
 			rest.expr = op;
 
@@ -764,7 +764,7 @@ namespace ast
 		}
 		else // дальнейшие операции сравнения недозволены, выражение должно окончится ) или ;
 		{
-			OutputError(tokens[tokenIndex], "Excepted ; or )");
+			OutputError(tokens_[tokenIndex], "Excepted ; or )");
 
 			return Rest{};
 		}
@@ -788,19 +788,19 @@ namespace ast
 	{
 		std::cout << "\nGetCompare at tokenIndex = " + std::to_string(tokenIndex);
 
-		if (tokenIndex == tokens.size())
+		if (tokenIndex == tokens_.size())
 		{
 			return nullptr;
 		}
 
 		Node* expr = GetExpr(tokenIndex);
 
-		if (tokenIndex == tokens.size())
+		if (tokenIndex == tokens_.size())
 		{
 			return expr;
 		}
 
-		if (tokens[tokenIndex]->GetType() == TokenType::Semicolon)
+		if (tokens_[tokenIndex]->GetType() == TokenType::Semicolon)
 		{
 			return expr;
 		}
@@ -824,7 +824,7 @@ namespace ast
 
 		Node* expr = GetCompare(tokenIndex);
 
-		if (tokenIndex != tokens.size() && tokens[tokenIndex]->GetType() == TokenType::CloseBracket)
+		if (tokenIndex != tokens_.size() && tokens_[tokenIndex]->GetType() == TokenType::CloseBracket)
 		{
 			if (isParsingBrackets || blockContext_.bracketsLevel > 0)
 			{
@@ -837,7 +837,7 @@ namespace ast
 			}
 			else
 			{
-				OutputError(tokens[tokenIndex], "Open bracket without close bracket");
+				OutputError(tokens_[tokenIndex], "Open bracket without close bracket");
 
 				return nullptr;
 			}
@@ -852,19 +852,19 @@ namespace ast
 
 		StmtNode* stmt = new StmtNode();
 
-		KeywordToken* tok = tokens[tokenIndex]->AsToken<KeywordToken>();
+		KeywordToken* tok = tokens_[tokenIndex]->AsToken<KeywordToken>();
 
 		std::optional<DataType> type = GetTypeFromKeyword(tok);
 
 		if (!type.has_value())
 		{
-			OutputError(tokens[tokenIndex], "Excepted Data Type");
+			OutputError(tokens_[tokenIndex], "Excepted Data Type");
 		}
 		else
 		{
 			if (type.value() == DataType::Void)
 			{
-				OutputError(tokens[tokenIndex], "void not allowed as variable data type");
+				OutputError(tokens_[tokenIndex], "void not allowed as variable data type");
 			}
 		}
 
@@ -872,13 +872,13 @@ namespace ast
 
 		tokenIndex++;
 
-		if (tokenIndex >= tokens.size())
+		if (tokenIndex >= tokens_.size())
 		{
 			return nullptr;
 		}
 
 		// ссылка (<type>&)
-		if (tokens[tokenIndex]->GetType() == TokenType::Ampersand)
+		if (tokens_[tokenIndex]->GetType() == TokenType::Ampersand)
 		{
 			isRef = true;
 
@@ -886,10 +886,10 @@ namespace ast
 		}
 
 		// присваивание (<name> '=' Eval)
-		if (tokens[tokenIndex + 1]->GetType() == TokenType::Operator &&
-			(tokens[tokenIndex + 1]->AsToken<OperatorToken>()->opType == OperatorTokenType::Assign))
+		if (tokens_[tokenIndex + 1]->GetType() == TokenType::Operator &&
+			(tokens_[tokenIndex + 1]->AsToken<OperatorToken>()->opType == OperatorTokenType::Assign))
 		{
-			IdToken* tok = tokens[tokenIndex]->AsToken<IdToken>();
+			IdToken* tok = tokens_[tokenIndex]->AsToken<IdToken>();
 
 			// перепрыгиваем ID
 			tokenIndex++;
@@ -899,7 +899,7 @@ namespace ast
 
 			Node* eval = GetEval(tokenIndex);
 
-			if (tokens[tokenIndex]->GetType() != TokenType::Semicolon)
+			if (tokens_[tokenIndex]->GetType() != TokenType::Semicolon)
 			{
 				return nullptr;
 			}
@@ -921,9 +921,9 @@ namespace ast
 
 			return stmt;
 		}
-		else if (tokens[tokenIndex + 1]->GetType() == TokenType::Semicolon) // просто объявление (VarDecl ';')
+		else if (tokens_[tokenIndex + 1]->GetType() == TokenType::Semicolon) // просто объявление (VarDecl ';')
 		{
-			IdToken* tok = tokens[tokenIndex]->AsToken<IdToken>();
+			IdToken* tok = tokens_[tokenIndex]->AsToken<IdToken>();
 
 			VarNode* id = new VarNode(tok->idName);
 
@@ -942,7 +942,7 @@ namespace ast
 		{
 			Node* eval = GetEval(tokenIndex);
 
-			if (tokens[tokenIndex]->GetType() != TokenType::Semicolon)
+			if (tokens_[tokenIndex]->GetType() != TokenType::Semicolon)
 			{
 				return nullptr;
 			}
@@ -959,14 +959,14 @@ namespace ast
 	{
 		std::cout << "\nGetIfStmt at tokenIndex = " + std::to_string(tokenIndex);
 
-		SourceLocation loc = tokens[tokenIndex]->location;
+		SourceLocation loc = tokens_[tokenIndex]->location;
 
 		// токен - keyword = if, это гарантирует GetSeq, нужно быть осторожным, если захочется использовать эту функцию ещё где-то
 		tokenIndex++;
 
-		if(tokens[tokenIndex]->GetType() != TokenType::OpenBracket)
+		if(tokens_[tokenIndex]->GetType() != TokenType::OpenBracket)
 		{
-			OutputError(tokens[tokenIndex], "Excepted (");
+			OutputError(tokens_[tokenIndex], "Excepted (");
 
 			return nullptr;
 		}
@@ -977,9 +977,9 @@ namespace ast
 
 		Node* cond = GetEval(tokenIndex);
 
-		if (tokens[tokenIndex]->GetType() != TokenType::CloseBracket)
+		if (tokens_[tokenIndex]->GetType() != TokenType::CloseBracket)
 		{
-			OutputError(tokens[tokenIndex], "Excepted )");
+			OutputError(tokens_[tokenIndex], "Excepted )");
 
 			return nullptr;
 		}
@@ -992,9 +992,9 @@ namespace ast
 
 		ifStmt->SetCond(cond);
 
-		if (tokens[tokenIndex]->GetType() != TokenType::OpenBrace)
+		if (tokens_[tokenIndex]->GetType() != TokenType::OpenBrace)
 		{
-			OutputError(tokens[tokenIndex], "Excepted {");
+			OutputError(tokens_[tokenIndex], "Excepted {");
 
 			return nullptr;
 		}
@@ -1003,9 +1003,9 @@ namespace ast
 
 		SeqNode* startSeq = GetSeq(tokenIndex);
 
-		if (tokens[tokenIndex]->GetType() != TokenType::CloseBrace)
+		if (tokens_[tokenIndex]->GetType() != TokenType::CloseBrace)
 		{
-			OutputError(tokens[tokenIndex], "Excepted }");
+			OutputError(tokens_[tokenIndex], "Excepted }");
 
 			return nullptr;
 		}
@@ -1022,16 +1022,16 @@ namespace ast
 	{
 		std::cout << "\nGetElseStmt at tokenIndex = " + std::to_string(tokenIndex);
 
-		SourceLocation loc = tokens[tokenIndex]->location;
+		SourceLocation loc = tokens_[tokenIndex]->location;
 
 		// токен - keyword = else, это гарантирует GetSeq, нужно быть осторожным, если захочется использовать эту функцию ещё где-то
 		tokenIndex++;
 
 		ElseStmtNode* ifStmt = new ElseStmtNode();
 
-		if (tokens[tokenIndex]->GetType() != TokenType::OpenBrace)
+		if (tokens_[tokenIndex]->GetType() != TokenType::OpenBrace)
 		{
-			OutputError(tokens[tokenIndex], "Excepted {");
+			OutputError(tokens_[tokenIndex], "Excepted {");
 
 			return nullptr;
 		}
@@ -1040,9 +1040,9 @@ namespace ast
 
 		SeqNode* startSeq = GetSeq(tokenIndex);
 
-		if (tokens[tokenIndex]->GetType() != TokenType::CloseBrace)
+		if (tokens_[tokenIndex]->GetType() != TokenType::CloseBrace)
 		{
-			OutputError(tokens[tokenIndex], "Excepted }");
+			OutputError(tokens_[tokenIndex], "Excepted }");
 
 			return nullptr;
 		}
@@ -1059,27 +1059,27 @@ namespace ast
 	{
 		std::cout << "\nGetAssign at tokenIndex = " + std::to_string(tokenIndex);
 
-		std::string varName = tokens[tokenIndex]->AsToken<IdToken>()->idName;
-		SourceLocation idLoc = tokens[tokenIndex]->location;
+		std::string varName = tokens_[tokenIndex]->AsToken<IdToken>()->idName;
+		SourceLocation idLoc = tokens_[tokenIndex]->location;
 
 		// перепрыгиваем ID
 		tokenIndex++;
 
-		if (tokens[tokenIndex]->GetType() != TokenType::Operator)
+		if (tokens_[tokenIndex]->GetType() != TokenType::Operator)
 		{
-			OutputError(tokens[tokenIndex], "Excepted operator =");
+			OutputError(tokens_[tokenIndex], "Excepted operator =");
 
 			return nullptr;
 		}
 
-		if (tokens[tokenIndex]->AsToken<OperatorToken>()->opType != OperatorTokenType::Assign)
+		if (tokens_[tokenIndex]->AsToken<OperatorToken>()->opType != OperatorTokenType::Assign)
 		{
-			OutputError(tokens[tokenIndex], "Excepted operator =");
+			OutputError(tokens_[tokenIndex], "Excepted operator =");
 
 			return nullptr;
 		}
 
-		SourceLocation loc = tokens[tokenIndex]->location;
+		SourceLocation loc = tokens_[tokenIndex]->location;
 
 		//Перепрыгиваем =
 		tokenIndex++;
@@ -1089,7 +1089,7 @@ namespace ast
 
 		Node* eval = GetEval(tokenIndex);
 
-		if (tokens[tokenIndex]->GetType() != TokenType::Semicolon)
+		if (tokens_[tokenIndex]->GetType() != TokenType::Semicolon)
 		{
 			return nullptr;
 		}
@@ -1106,12 +1106,12 @@ namespace ast
 
 		std::cout << "GetSeq at tokenIndex = " + std::to_string(tokenIndex);
 
-		if (tokenIndex >= tokens.size())
+		if (tokenIndex >= tokens_.size())
 		{
 			return nullptr;
 		}
 
-		if (tokens[tokenIndex]->GetType() == TokenType::CloseBrace)
+		if (tokens_[tokenIndex]->GetType() == TokenType::CloseBrace)
 		{
 			return nullptr;
 		}
@@ -1119,13 +1119,13 @@ namespace ast
 		SeqNode* seq = new SeqNode();
 
 		// вариации return 
-		if (tokens[tokenIndex]->GetType() == TokenType::Keyword && tokens[tokenIndex]->AsToken<KeywordToken>()->type == KeywordType::Return) 
+		if (tokens_[tokenIndex]->GetType() == TokenType::Keyword && tokens_[tokenIndex]->AsToken<KeywordToken>()->type == KeywordType::Return) 
 		{
 			// перепрыгиваем return
 			tokenIndex++;
 
 			// пустой return ('return' ';')
-			if (tokens[tokenIndex]->GetType() == TokenType::Semicolon)
+			if (tokens_[tokenIndex]->GetType() == TokenType::Semicolon)
 			{
 				ReturnStmtNode* ret = new ReturnStmtNode();
 
@@ -1147,10 +1147,10 @@ namespace ast
 
 			Node* eval = GetEval(tokenIndex);
 
-			if (tokens[tokenIndex]->GetType() != TokenType::Semicolon)
+			if (tokens_[tokenIndex]->GetType() != TokenType::Semicolon)
 			{
 				// начинается паника, ищем ;
-				while (tokenIndex != tokens.size() && tokens[tokenIndex]->GetType() != TokenType::Semicolon)
+				while (tokenIndex != tokens_.size() && tokens_[tokenIndex]->GetType() != TokenType::Semicolon)
 				{
 					tokenIndex++;
 				}
@@ -1181,14 +1181,14 @@ namespace ast
 
 			return seq;
 		}
-		else if (tokens[tokenIndex]->GetType() == TokenType::Keyword && tokens[tokenIndex]->AsToken<KeywordToken>()->type == KeywordType::If) // if блок
+		else if (tokens_[tokenIndex]->GetType() == TokenType::Keyword && tokens_[tokenIndex]->AsToken<KeywordToken>()->type == KeywordType::If) // if блок
 		{
 			IfStmtNode* stmt = GetIfStmt(tokenIndex);
 
 			if (stmt == nullptr)
 			{
 				// начинается паника, ищем ;
-				while (tokenIndex != tokens.size() && tokens[tokenIndex]->GetType() != TokenType::Semicolon)
+				while (tokenIndex != tokens_.size() && tokens_[tokenIndex]->GetType() != TokenType::Semicolon)
 				{
 					tokenIndex++;
 				}
@@ -1211,14 +1211,14 @@ namespace ast
 
 			return seq;
 		}
-		else if (tokens[tokenIndex]->GetType() == TokenType::Keyword && tokens[tokenIndex]->AsToken<KeywordToken>()->type == KeywordType::Else) // else блок
+		else if (tokens_[tokenIndex]->GetType() == TokenType::Keyword && tokens_[tokenIndex]->AsToken<KeywordToken>()->type == KeywordType::Else) // else блок
 		{
 			ElseStmtNode* stmt = GetElseStmt(tokenIndex);
 
 			if (stmt == nullptr)
 			{
 				// начинается паника, ищем ;
-				while (tokenIndex != tokens.size() && tokens[tokenIndex]->GetType() != TokenType::Semicolon)
+				while (tokenIndex != tokens_.size() && tokens_[tokenIndex]->GetType() != TokenType::Semicolon)
 				{
 					tokenIndex++;
 				}
@@ -1241,21 +1241,21 @@ namespace ast
 
 			return seq;
 		}
-		else if (tokens[tokenIndex]->GetType() == TokenType::Keyword) // объявление переменной (Stmt ';')
+		else if (tokens_[tokenIndex]->GetType() == TokenType::Keyword) // объявление переменной (Stmt ';')
 		{
 			StmtNode* node = GetStmt(tokenIndex);
 
 			if (node == nullptr)
 			{
-				if (tokenIndex == tokens.size())
+				if (tokenIndex == tokens_.size())
 				{
-					OutputError(tokens[tokenIndex - 1], "Excepted Semicolon");
+					OutputError(tokens_[tokenIndex - 1], "Excepted Semicolon");
 
 					return nullptr;
 				}
 
 				// начинается паника, ищем ;
-				while (tokenIndex != tokens.size() && tokens[tokenIndex]->GetType() != TokenType::Semicolon)
+				while (tokenIndex != tokens_.size() && tokens_[tokenIndex]->GetType() != TokenType::Semicolon)
 				{
 					tokenIndex++;
 				}
@@ -1265,9 +1265,9 @@ namespace ast
 			}
 			else
 			{
-				if (tokens[tokenIndex]->GetType() != TokenType::Semicolon)
+				if (tokens_[tokenIndex]->GetType() != TokenType::Semicolon)
 				{
-					OutputError(tokens[tokenIndex], "Excepted Semicolon");
+					OutputError(tokens_[tokenIndex], "Excepted Semicolon");
 
 					return nullptr;
 				}
@@ -1290,15 +1290,15 @@ namespace ast
 
 			return seq;
 		}
-		else if (tokens[tokenIndex]->GetType() == TokenType::Id && tokens[tokenIndex + 1]->GetType() == TokenType::Operator &&
-				 tokens[tokenIndex + 1]->AsToken<OperatorToken>()->opType == OperatorTokenType::Assign) // assign без объявления переменной (Assign ';')
+		else if (tokens_[tokenIndex]->GetType() == TokenType::Id && tokens_[tokenIndex + 1]->GetType() == TokenType::Operator &&
+				 tokens_[tokenIndex + 1]->AsToken<OperatorToken>()->opType == OperatorTokenType::Assign) // assign без объявления переменной (Assign ';')
 		{
 			AssignNode* assign = GetAssign(tokenIndex);
 
 			if (assign == nullptr)
 			{
 				// начинается паника, ищем ;
-				while (tokenIndex != tokens.size() && tokens[tokenIndex]->GetType() != TokenType::Semicolon)
+				while (tokenIndex != tokens_.size() && tokens_[tokenIndex]->GetType() != TokenType::Semicolon)
 				{
 					tokenIndex++;
 				}
@@ -1311,9 +1311,9 @@ namespace ast
 				seq->SetExprNode(assign);
 			}
 
-			if (tokens[tokenIndex]->GetType() != TokenType::Semicolon)
+			if (tokens_[tokenIndex]->GetType() != TokenType::Semicolon)
 			{
-				OutputError(tokens[tokenIndex], "Excepted Semicolon");
+				OutputError(tokens_[tokenIndex], "Excepted Semicolon");
 
 				return nullptr;
 			}
@@ -1329,7 +1329,7 @@ namespace ast
 
 			return seq;
 		}
-		else if (tokens[tokenIndex]->GetType() == TokenType::Semicolon)
+		else if (tokens_[tokenIndex]->GetType() == TokenType::Semicolon)
 		{
 			tokenIndex++;
 
@@ -1350,15 +1350,15 @@ namespace ast
 		if (eval == nullptr)
 		{
 			// паника, ищем ;
-			while (tokenIndex != tokens.size() && tokens[tokenIndex]->GetType() != TokenType::Semicolon)
+			while (tokenIndex != tokens_.size() && tokens_[tokenIndex]->GetType() != TokenType::Semicolon)
 			{
 				tokenIndex++;
 			}
 		}
 
-		if (tokens[tokenIndex]->GetType() != TokenType::Semicolon)
+		if (tokens_[tokenIndex]->GetType() != TokenType::Semicolon)
 		{
-			OutputError(tokens[tokenIndex], "Excepted Semicolon");
+			OutputError(tokens_[tokenIndex], "Excepted Semicolon");
 
 			return nullptr;
 		}
@@ -1371,7 +1371,7 @@ namespace ast
 			seq->SetExprNode(eval);
 		}
 
-		if (tokenIndex >= tokens.size())
+		if (tokenIndex >= tokens_.size())
 		{
 			return seq;
 		}
@@ -1390,55 +1390,55 @@ namespace ast
 	{
 		std::cout << "\nGetFunctionArgDecl at tokenIndex = " + std::to_string(tokenIndex);
 
-		if (tokenIndex >= tokens.size())
+		if (tokenIndex >= tokens_.size())
 		{
 			blockContext_.status = false;
 
 			return nullptr;
 		}
 
-		if (tokens[tokenIndex]->GetType() != TokenType::Keyword)
+		if (tokens_[tokenIndex]->GetType() != TokenType::Keyword)
 		{
-			OutputError(tokens[tokenIndex], "Excepted argument type");
+			OutputError(tokens_[tokenIndex], "Excepted argument type");
 
 			return nullptr;
 		}
 
-		std::optional<DataType> argType = GetTypeFromKeyword(tokens[tokenIndex]->AsToken<KeywordToken>());
+		std::optional<DataType> argType = GetTypeFromKeyword(tokens_[tokenIndex]->AsToken<KeywordToken>());
 
 		if (!argType.has_value())
 		{
-			OutputError(tokens[tokenIndex], "Excepted Data Type");
+			OutputError(tokens_[tokenIndex], "Excepted Data Type");
 
 			return nullptr;
 		}
 
 		if (argType.value() == DataType::Void)
 		{
-			OutputError(tokens[tokenIndex], "void as argument type not allowed");
+			OutputError(tokens_[tokenIndex], "void as argument type not allowed");
 		}
 
 		tokenIndex++;
 
-		if (tokens[tokenIndex]->GetType() != TokenType::Id)
+		if (tokens_[tokenIndex]->GetType() != TokenType::Id)
 		{
-			OutputError(tokens[tokenIndex], "Excepted argument name");
+			OutputError(tokens_[tokenIndex], "Excepted argument name");
 
 			return nullptr;
 		}
 
-		IdToken* argToken = tokens[tokenIndex]->AsToken<IdToken>();
+		IdToken* argToken = tokens_[tokenIndex]->AsToken<IdToken>();
 		std::string argName = argToken->idName;
 
 		tokenIndex++;
 
-		if (tokens[tokenIndex]->GetType() == TokenType::Operator ||
-			tokens[tokenIndex]->GetType() == TokenType::CloseBracket)
+		if (tokens_[tokenIndex]->GetType() == TokenType::Operator ||
+			tokens_[tokenIndex]->GetType() == TokenType::CloseBracket)
 		{
-			if (tokens[tokenIndex]->GetType() == TokenType::Operator &&
-				tokens[tokenIndex]->AsToken<OperatorToken>()->opType != OperatorTokenType::Comma)
+			if (tokens_[tokenIndex]->GetType() == TokenType::Operator &&
+				tokens_[tokenIndex]->AsToken<OperatorToken>()->opType != OperatorTokenType::Comma)
 			{
-				OutputError(tokens[tokenIndex], "Excepted comma or close bracket");
+				OutputError(tokens_[tokenIndex], "Excepted comma or close bracket");
 
 				return nullptr;
 			}
@@ -1458,7 +1458,7 @@ namespace ast
 			return arg;
 		}
 
-		OutputError(tokens[tokenIndex], "Excepted comma or close bracket");
+		OutputError(tokens_[tokenIndex], "Excepted comma or close bracket");
 
 		return nullptr;
 	}
@@ -1467,7 +1467,7 @@ namespace ast
 	{
 		std::cout << "\nGetFunctionArgs at tokenIndex = " + std::to_string(tokenIndex);
 
-		if (tokens[tokenIndex]->GetType() == TokenType::CloseBracket)
+		if (tokens_[tokenIndex]->GetType() == TokenType::CloseBracket)
 		{
 			// Если за OpenBracket идёт CloseBracket, то значит, что функция без аргументов
 			return nullptr;
@@ -1487,8 +1487,8 @@ namespace ast
 				return nullptr;
 			}
 
-			if (tokens[tokenIndex]->GetType() == TokenType::Operator &&
-				tokens[tokenIndex]->AsToken<OperatorToken>()->opType == OperatorTokenType::Comma)
+			if (tokens_[tokenIndex]->GetType() == TokenType::Operator &&
+				tokens_[tokenIndex]->AsToken<OperatorToken>()->opType == OperatorTokenType::Comma)
 			{
 				tokenIndex++;
 
@@ -1507,7 +1507,7 @@ namespace ast
 				continue;
 			}
 
-			if (tokens[tokenIndex]->GetType() == TokenType::CloseBracket)
+			if (tokens_[tokenIndex]->GetType() == TokenType::CloseBracket)
 			{
 				if (prevArg != nullptr && firstArg != nullptr)
 				{
@@ -1536,40 +1536,40 @@ namespace ast
 
 		int flags = GetFunctionQualifier(tokenIndex);
 
-		if (tokens[tokenIndex]->GetType() != TokenType::Keyword)
+		if (tokens_[tokenIndex]->GetType() != TokenType::Keyword)
 		{
-			OutputError(tokens[tokenIndex], "Excepted Decl");
+			OutputError(tokens_[tokenIndex], "Excepted Decl");
 
 			return nullptr;
 		}
 
-		std::optional<DataType> retType = GetTypeFromKeyword(tokens[tokenIndex]->AsToken<KeywordToken>());
+		std::optional<DataType> retType = GetTypeFromKeyword(tokens_[tokenIndex]->AsToken<KeywordToken>());
 
 		if (!retType.has_value())
 		{
-			OutputError(tokens[tokenIndex], "Excepted Data Type");
+			OutputError(tokens_[tokenIndex], "Excepted Data Type");
 
 			return nullptr;
 		}
 
 		tokenIndex++;
 
-		if (tokens[tokenIndex]->GetType() != TokenType::Id)
+		if (tokens_[tokenIndex]->GetType() != TokenType::Id)
 		{
-			OutputError(tokens[tokenIndex], "Excepted Name");
+			OutputError(tokens_[tokenIndex], "Excepted Name");
 
 			return nullptr;
 		}
 
-		IdToken* funcToken = tokens[tokenIndex]->AsToken<IdToken>();
+		IdToken* funcToken = tokens_[tokenIndex]->AsToken<IdToken>();
 
 		std::string funcName = funcToken->idName;
 
 		tokenIndex++;
 
-		if (tokens[tokenIndex]->GetType() != TokenType::OpenBracket)
+		if (tokens_[tokenIndex]->GetType() != TokenType::OpenBracket)
 		{
-			OutputError(tokens[tokenIndex], "Excepted Open Bracket");
+			OutputError(tokens_[tokenIndex], "Excepted Open Bracket");
 
 			return nullptr;
 		}
@@ -1580,7 +1580,7 @@ namespace ast
 
 		FunctionArgNode* firstArg = GetFunctionArgs(tokenIndex);
 
-		if (tokens[tokenIndex]->GetType() != TokenType::CloseBracket)
+		if (tokens_[tokenIndex]->GetType() != TokenType::CloseBracket)
 		{
 			return nullptr;
 		}
@@ -1610,9 +1610,9 @@ namespace ast
 			temp = temp->GetNextNode();
 		}
 
-		if (tokens[tokenIndex]->GetType() != TokenType::OpenBrace)
+		if (tokens_[tokenIndex]->GetType() != TokenType::OpenBrace)
 		{
-			OutputError(tokens[tokenIndex], "Excepted Open Brace");
+			OutputError(tokens_[tokenIndex], "Excepted Open Brace");
 
 			return nullptr;
 		}
@@ -1623,9 +1623,9 @@ namespace ast
 
 		SeqNode* firstSeq = GetSeq(tokenIndex);
 
-		if (tokens[tokenIndex]->GetType() != TokenType::CloseBrace)
+		if (tokens_[tokenIndex]->GetType() != TokenType::CloseBrace)
 		{
-			OutputError(tokens[tokenIndex], "Excepted Close Brace");
+			OutputError(tokens_[tokenIndex], "Excepted Close Brace");
 
 			return nullptr;
 		}
@@ -1650,7 +1650,7 @@ namespace ast
 
 		int tokenIndex = 0;
 
-		while (tokenIndex != tokens.size() && tokenIndex < tokens.size())
+		while (tokenIndex != tokens_.size() && tokenIndex < tokens_.size())
 		{
 			FunctionDeclNode* node = GetFunctionDecl(tokenIndex);
 
@@ -1665,7 +1665,7 @@ namespace ast
 			else
 			{
 				// паника, ищем } 
-				while (tokenIndex != tokens.size() && tokens[tokenIndex]->GetType() != TokenType::CloseBrace)
+				while (tokenIndex != tokens_.size() && tokens_[tokenIndex]->GetType() != TokenType::CloseBrace)
 				{
 					tokenIndex++;
 				}
@@ -1679,7 +1679,7 @@ namespace ast
 
 	void Builder::Build(std::vector<Token*>& tokens)
 	{
-		this->tokens = tokens;
+		this->tokens_ = tokens;
 
 		GetMain();
 

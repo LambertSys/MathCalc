@@ -43,8 +43,7 @@
     <ClInclude Include="DataType.hpp" />
     <ClInclude Include="Function.hpp" />
     <ClInclude Include="Generator.hpp" />
-    <ClInclude Include="IR.hpp" />
-    <ClInclude Include="IRGenerator.h" />
+    <ClInclude Include="IL.h" />
     <ClInclude Include="Lexer.hpp" />
     <ClInclude Include="LexerUtils.hpp" />
     <ClInclude Include="Parser.hpp" />
@@ -58,12 +57,15 @@
     <ClInclude Include="SourceLocation.hpp" />
     <ClInclude Include="SymbolTable.hpp" />
     <ClInclude Include="Token.hpp" />
-    <ClInclude Include="Transformer.hpp" />
     <ClInclude Include="TypeInfo.hpp" />
     <ClInclude Include="TypeUtils.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\README.md">
+      <SubType>
+      </SubType>
+    </None>
     <None Include="CHANGES.md" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

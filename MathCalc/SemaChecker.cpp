@@ -123,7 +123,7 @@ std::optional<DataType> SemaChecker::VisitExpr(ast::Node* node)
 		if (opNode->OperatorType() == BinaryOperatorType::Greater || opNode->OperatorType() == BinaryOperatorType::Less || opNode->OperatorType() == BinaryOperatorType::Equal ||
 			opNode->OperatorType() == BinaryOperatorType::GreaterEqual || opNode->OperatorType() == BinaryOperatorType::LessEqual)
 		{
-			opNode->SetDataType(DataType::Bool);
+			opNode->SetSemaDataType(DataType::Bool);
 		}
 
 		// слева ошибка
@@ -134,7 +134,7 @@ std::optional<DataType> SemaChecker::VisitExpr(ast::Node* node)
 				if (!(opNode->OperatorType() == BinaryOperatorType::Greater || opNode->OperatorType() == BinaryOperatorType::Less || opNode->OperatorType() == BinaryOperatorType::Equal ||
 					opNode->OperatorType() == BinaryOperatorType::GreaterEqual || opNode->OperatorType() == BinaryOperatorType::LessEqual))
 				{
-					opNode->SetDataType(rightType);
+					opNode->SetSemaDataType(rightType);
 				}
 
 				return rightType;
@@ -151,11 +151,11 @@ std::optional<DataType> SemaChecker::VisitExpr(ast::Node* node)
 			if (opNode->OperatorType() == BinaryOperatorType::Greater || opNode->OperatorType() == BinaryOperatorType::Less || opNode->OperatorType() == BinaryOperatorType::Equal ||
 				opNode->OperatorType() == BinaryOperatorType::GreaterEqual || opNode->OperatorType() == BinaryOperatorType::LessEqual)
 			{
-				opNode->SetDataType(DataType::Bool);
+				opNode->SetSemaDataType(DataType::Bool);
 			}
 			else
 			{
-				opNode->SetDataType(leftType);
+				opNode->SetSemaDataType(leftType);
 			}
 
 			return leftType;
@@ -167,11 +167,11 @@ std::optional<DataType> SemaChecker::VisitExpr(ast::Node* node)
 			if (opNode->OperatorType() == BinaryOperatorType::Greater || opNode->OperatorType() == BinaryOperatorType::Less || opNode->OperatorType() == BinaryOperatorType::Equal ||
 				opNode->OperatorType() == BinaryOperatorType::GreaterEqual || opNode->OperatorType() == BinaryOperatorType::LessEqual)
 			{
-				opNode->SetDataType(DataType::Bool);
+				opNode->SetSemaDataType(DataType::Bool);
 			}
 			else
 			{
-				opNode->SetDataType(leftType);
+				opNode->SetSemaDataType(leftType);
 			}
 
 			return leftType;
@@ -187,7 +187,7 @@ std::optional<DataType> SemaChecker::VisitExpr(ast::Node* node)
 				cast->SetExprNode(opNode->RightOperand());
 
 				opNode->SetRightOperand(cast);
-				opNode->SetDataType(leftType);
+				opNode->SetSemaDataType(leftType);
 			}
 			else
 			{
@@ -195,7 +195,7 @@ std::optional<DataType> SemaChecker::VisitExpr(ast::Node* node)
 				cast->SetExprNode(opNode->LeftOperand());
 
 				opNode->SetLeftOperand(cast);
-				opNode->SetDataType(rightType);
+				opNode->SetSemaDataType(rightType);
 			}
 		}
 		else if(GetRank(leftType) > GetRank(rightType))
@@ -204,7 +204,7 @@ std::optional<DataType> SemaChecker::VisitExpr(ast::Node* node)
 			cast->SetExprNode(opNode->RightOperand());
 
 			opNode->SetRightOperand(cast);
-			opNode->SetDataType(leftType);
+			opNode->SetSemaDataType(leftType);
 		}
 		else if (GetRank(leftType) < GetRank(rightType))
 		{
@@ -212,17 +212,17 @@ std::optional<DataType> SemaChecker::VisitExpr(ast::Node* node)
 			cast->SetExprNode(opNode->LeftOperand());
 
 			opNode->SetLeftOperand(cast);
-			opNode->SetDataType(rightType);
+			opNode->SetSemaDataType(rightType);
 		}
 
 		// логические операторы
 		if (opNode->OperatorType() == BinaryOperatorType::Greater || opNode->OperatorType() == BinaryOperatorType::Less || opNode->OperatorType() == BinaryOperatorType::Equal ||
 			opNode->OperatorType() == BinaryOperatorType::GreaterEqual || opNode->OperatorType() == BinaryOperatorType::LessEqual)
 		{
-			opNode->SetDataType(DataType::Bool);
+			opNode->SetSemaDataType(DataType::Bool);
 		}
 		
-		return opNode->GetDataType();
+		return opNode->GetSemaDataType();
 	}
 	break;
 	case ast::NodeType::UnaryOperator:

@@ -116,7 +116,7 @@ std::string Parser::Traseval(ast::Node* node)
 	{
 		ast::CastNode* cast = node->AsNode<ast::CastNode>();
 
-		std::string t = "t" + std::to_string(counter);
+		std::string t = "t" + std::to_string(counter_);
 
 		std::string expr = Traseval(cast->GetExprNode());
 
@@ -134,7 +134,7 @@ std::string Parser::Traseval(ast::Node* node)
 
 		resultCode += t + " = cast " + typeTo + " " + expr + "\n";
 
-		counter++;
+		counter_++;
 
 		return t;
 	}
@@ -147,11 +147,11 @@ std::string Parser::Traseval(ast::Node* node)
 
 		std::string operand = Traseval(opNode->Operand());
 
-		std::string t = "t" + std::to_string(counter);
+		std::string t = "t" + std::to_string(counter_);
 
 		resultCode += t + " = " + opName + "(" + operand + ")\n";
 
-		counter++;
+		counter_++;
 
 		return t;
 	}
@@ -195,11 +195,11 @@ std::string Parser::Traseval(ast::Node* node)
 			break;
 		}
 
-		std::string t = "t" + std::to_string(counter);
+		std::string t = "t" + std::to_string(counter_);
 
 		resultCode += t + " = " + leftOp + " " + opName + " " + rightOp + "\n";
 		
-		counter++;
+		counter_++;
 
 		return t;
 	}
@@ -218,7 +218,7 @@ std::string Parser::Traseval(ast::Node* node)
 			currentArg = currentArg->NextArg();
 		}
 
-		std::string t = "t" + std::to_string(counter);
+		std::string t = "t" + std::to_string(counter_);
 
 		resultCode += t + " = " + func->Name() + "(";
 
@@ -236,7 +236,7 @@ std::string Parser::Traseval(ast::Node* node)
 
 		resultCode += ")\n";
 
-		counter++;
+		counter_++;
 
 		return t;
 	}
@@ -278,7 +278,7 @@ std::string Parser::Traseval(ast::Node* node)
 
 void Parser::PrintErrors(Lexer& lexer, ast::Builder& builder)
 {
-	status = false;
+	status_ = false;
 
 	std::cout << "Parser errors:\n";
 
@@ -307,14 +307,14 @@ void Parser::PrintErrors(Lexer& lexer, ast::Builder& builder)
 
 void Parser::SetExpression(std::string expression)
 {
-	this->expression = expression;
+	this->expression_ = expression;
 }
 
 void Parser::Parse()
 {
-	if (expression.empty())
+	if (expression_.empty())
 	{
-		status = false;
+		status_ = false;
 
 		std::cout << "Error: expression string is empty\n";
 
@@ -323,7 +323,7 @@ void Parser::Parse()
 
 	if (context_ == nullptr)
 	{
-		status = false;
+		status_ = false;
 
 		std::cout << "Error: context not setted";
 
@@ -332,11 +332,11 @@ void Parser::Parse()
 
 	Lexer lexer;
 
-	lexer.Scan(expression);
+	lexer.Scan(expression_);
 
 	if (lexer.GetStatus() == false)
 	{
-		status = false;
+		status_ = false;
 
 		std::cout << "Lexer error:\n";
 		std::cout << lexer.GetErrorMessage() << std::endl;
@@ -361,7 +361,7 @@ void Parser::Parse()
 	{
 		PrintErrors(lexer, builder);
 
-		status = false;
+		status_ = false;
 	}
 }
 
@@ -371,7 +371,7 @@ std::string Parser::GenerateCode()
 	{
 		Traseval(func);
 
-		counter = 0;
+		counter_ = 0;
 	}
 
 	return resultCode;

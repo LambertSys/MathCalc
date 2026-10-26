@@ -32,13 +32,13 @@ namespace ast
 	class Node
 	{
 	private:
-		std::vector<Node*> parents;
+		std::vector<Node*> parents_;
 
 		SourceLocation loc_;
 
 	public:
-		void AddParent(Node* parent) { parents.push_back(parent); }
-		std::vector<Node*>& Parents() { return parents; }
+		void AddParent(Node* parent) { parents_.push_back(parent); }
+		std::vector<Node*>& Parents() { return parents_; }
 
 		void SetSourceLocation(SourceLocation loc) { loc_ = loc; }
 		SourceLocation& GetSourceLocation() { return loc_; }
@@ -82,13 +82,13 @@ namespace ast
 	class UnaryOperatorNode : public Node
 	{
 	private:
-		Node* m_operand = nullptr;
-		UnaryOperatorType m_type;
+		Node* operand_ = nullptr;
+		UnaryOperatorType opType_;
 
-		DataType type_ = DataType::Max;
+		DataType semaType_ = DataType::Max;
 
 	public:
-		UnaryOperatorNode(UnaryOperatorType type) : m_type(type) {}
+		UnaryOperatorNode(UnaryOperatorType type) : opType_(type) {}
 
 		void SetOperand(Node* operand) 
 		{ 
@@ -97,15 +97,15 @@ namespace ast
 				operand->AddParent(this);
 			}
 
-			m_operand = operand; 
+			operand_ = operand; 
 		}
 
-		Node* Operand() { return m_operand; }
+		Node* Operand() { return operand_; }
 
-		UnaryOperatorType OperatorType() { return m_type; }
+		UnaryOperatorType OperatorType() { return opType_; }
 
-		void SetDataType(DataType type) { type_ = type; }
-		DataType GetDataType() { return type_; }
+		void SetDataType(DataType type) { semaType_ = type; }
+		DataType GetDataType() { return semaType_; }
 
 		NodeType Type() override
 		{
@@ -129,39 +129,39 @@ namespace ast
 	class BinaryOperatorNode : public Node
 	{
 	private:
-		Node* m_leftOperand = nullptr;
-		Node* m_rightOperand = nullptr;
+		Node* leftOperand_ = nullptr;
+		Node* rightOperand_ = nullptr;
 
-		BinaryOperatorType m_type;
+		BinaryOperatorType opType_;
 
 		/// тип выражения, выставляется на семантической фазе
-		DataType type_ = DataType::Max;
+		DataType semaType_ = DataType::Max;
 
 	public:
-		BinaryOperatorNode(BinaryOperatorType type) : m_type(type) {}
+		BinaryOperatorNode(BinaryOperatorType type) : opType_(type) {}
 
 		void SetLeftOperand(Node* operand) 
 		{ 
-			m_leftOperand = operand; 
+			leftOperand_ = operand; 
 
 			operand->AddParent(this);
 		}
 
-		Node* LeftOperand() { return m_leftOperand; }
+		Node* LeftOperand() { return leftOperand_; }
 
 		void SetRightOperand(Node* operand) 
 		{ 
-			m_rightOperand = operand;
+			rightOperand_ = operand;
 
 			operand->AddParent(this);
 		}
 
-		Node* RightOperand() { return m_rightOperand; }
+		Node* RightOperand() { return rightOperand_; }
 
-		BinaryOperatorType OperatorType() { return m_type; }
+		BinaryOperatorType OperatorType() { return opType_; }
 
-		void SetDataType(DataType type) { type_ = type; }
-		DataType GetDataType() { return type_; }
+		void SetSemaDataType(DataType type) { semaType_ = type; }
+		DataType GetSemaDataType() { return semaType_; }
 
 		NodeType Type() override
 		{
@@ -172,15 +172,16 @@ namespace ast
 	class ArgSeqNode : public Node
 	{
 	private:
-		ArgSeqNode* m_next = nullptr;
+		ArgSeqNode* next_ = nullptr;
 
-		Node* m_expr;
+		Node* expr_;
+
 	public:
-		void SetNextArgNode(ArgSeqNode* node) { m_next = node; }
-		ArgSeqNode* NextArg() { return m_next; }
+		void SetNextArgNode(ArgSeqNode* node) { next_ = node; }
+		ArgSeqNode* NextArg() { return next_; }
 
-		void SetExprNode(Node* node) { m_expr = node; }
-		Node* ExprNode() { return m_expr; }
+		void SetExprNode(Node* node) { expr_ = node; }
+		Node* ExprNode() { return expr_; }
 
 		NodeType Type() override
 		{
@@ -191,27 +192,27 @@ namespace ast
 	class VarNode : public Node
 	{
 	private:
-		std::string m_name;
-		DataType type = DataType::Max;
+		std::string name_;
+		DataType type_ = DataType::Max;
 
-		bool m_isRef = false;
-		VarNode* m_ref = nullptr;
+		bool isRef_ = false;
+		VarNode* ref_ = nullptr;
 
 	public:
 		VarNode() = default;
-		VarNode(std::string name) : m_name(name) {}
+		VarNode(std::string name) : name_(name) {}
 
-		void SetName(std::string name) { m_name = name; }
-		std::string& Name() { return m_name; }
+		void SetName(std::string name) { name_ = name; }
+		std::string& Name() { return name_; }
 
-		void SetDataType(DataType type) { this->type = type; }
-		DataType GetDataType() { return type; }
+		void SetDataType(DataType type) { type_ = type; }
+		DataType GetDataType() { return type_; }
 
-		void SetRef(VarNode* node) { m_ref = node; }
-		VarNode* GetRef() { return m_ref; }
+		void SetRef(VarNode* node) { ref_ = node; }
+		VarNode* GetRef() { return ref_; }
 
-		void SetIsRef(bool state) { m_isRef = state; }
-		bool IsRef() { return m_isRef; }
+		void SetIsRef(bool state) { isRef_ = state; }
+		bool IsRef() { return isRef_; }
 
 		NodeType Type() override
 		{
@@ -243,7 +244,7 @@ namespace ast
 	class StmtNode : public Node
 	{
 	private:
-		Node* m_assign;
+		Node* assign_;
 
 	public:
 		void SetNode(Node* node) 
@@ -253,10 +254,10 @@ namespace ast
 				node->AddParent(this);
 			}
 
-			m_assign = node; 
+			assign_ = node; 
 		}
 
-		Node* GetNode() { return m_assign; }
+		Node* GetNode() { return assign_; }
 
 		NodeType Type() override
 		{
@@ -303,30 +304,30 @@ namespace ast
 	class SeqNode : public Node
 	{
 	private:
-		Node* m_expr = nullptr;
-		SeqNode* m_next = nullptr;
+		Node* expr_ = nullptr;
+		SeqNode* next_ = nullptr;
 
 	public:
 		SeqNode() = default;
-		SeqNode(Node* expr) : m_expr(expr) {}
+		SeqNode(Node* expr) : expr_(expr) {}
 
 		void SetExprNode(Node* expr) 
 		{ 
-			m_expr = expr; 
+			expr_ = expr; 
 
 			expr->AddParent(this);
 		}
 		
-		Node* ExprNode() { return m_expr; }
+		Node* ExprNode() { return expr_; }
 
 		void SetNextSeq(SeqNode* node) 
 		{ 
-			m_next = node; 
+			next_ = node; 
 
 			node->AddParent(this);
 		}
 
-		SeqNode* NextNode() { return m_next; }
+		SeqNode* NextNode() { return next_; }
 
 		NodeType Type() override
 		{
@@ -429,22 +430,22 @@ namespace ast
 	class FunctionArgNode : public Node
 	{
 	private:
-		DataType type;
-		std::string name;
+		DataType type_;
+		std::string name_;
 
-		FunctionArgNode* next = nullptr;
+		FunctionArgNode* next_ = nullptr;
 
-		VarNode* varNode_;
+		VarNode* varNode_ = nullptr;
 
 	public:
-		void SetDataType(DataType type) { this->type = type; }
-		DataType GetDataType() { return type; }
+		void SetDataType(DataType type) { this->type_ = type; }
+		DataType GetDataType() { return type_; }
 
-		void SetName(std::string name) { this->name = name; }
-		std::string GetName() { return name; }
+		void SetName(std::string name) { this->name_ = name; }
+		std::string GetName() { return name_; }
 
-		void SetNextNode(FunctionArgNode* node) { next = node; }
-		FunctionArgNode* GetNextNode() { return next; }
+		void SetNextNode(FunctionArgNode* node) { next_ = node; }
+		FunctionArgNode* GetNextNode() { return next_; }
 
 		void SetVariableNode(VarNode* id) { varNode_ = id; }
 		VarNode* GetVariableNode() { return varNode_; }
@@ -463,38 +464,38 @@ namespace ast
 	class FunctionDeclNode : public Node
 	{
 	private:
-		DataType retValueType;
-		std::vector<FunctionArgNode*> args;
+		DataType retValueType_;
+		std::vector<FunctionArgNode*> args_;
 
-		SeqNode* startSeq = nullptr;
+		SeqNode* startSeq_ = nullptr;
 
-		std::string name;
+		std::string name_;
 
 		SymbolTable funcTable_;
 
 		int flags_ = 0;
 
 	public:
-		void SetName(std::string name) { this->name = name; }
-		std::string& GetName() { return name; }
+		void SetName(std::string name) { name_ = name; }
+		std::string& GetName() { return name_; }
 
-		void SetReturnValueType(DataType type) { retValueType = type; }
-		DataType GetReturnType() { return retValueType; }
+		void SetReturnValueType(DataType type) { retValueType_ = type; }
+		DataType GetReturnType() { return retValueType_; }
 
 		void SetFlags(int flags) { flags_ = flags; }
 		int& GetFlags() { return flags_; }
 
 		void SetStartSeqNode(SeqNode* node) 
 		{ 
-			startSeq = node; 
+			startSeq_ = node; 
 
 			node->AddParent(this);
 		}
 		
-		SeqNode* GetStartSeqNode() { return startSeq; }
+		SeqNode* GetStartSeqNode() { return startSeq_; }
 
-		void AddArg(FunctionArgNode* node) { args.push_back(node); }
-		std::vector<FunctionArgNode*>& GetArgs() { return args; }
+		void AddArg(FunctionArgNode* node) { args_.push_back(node); }
+		std::vector<FunctionArgNode*>& GetArgs() { return args_; }
 
 		SymbolTable& GetSymbolTable() { return funcTable_; }
 
@@ -509,23 +510,23 @@ namespace ast
 	private:
 		std::vector<Node*> args_;
 
-		ArgSeqNode* m_rootArg;
-		std::string m_name;
+		ArgSeqNode* rootArg_;
+		std::string name_;
 
 		FunctionDeclNode* callFunc_ = nullptr;
 
 	public:
-		FunctionCallNode() : m_rootArg(nullptr), m_name() {}
-		FunctionCallNode(ArgSeqNode* rootArg, std::string name) : m_rootArg(rootArg), m_name(name) {}
+		FunctionCallNode() : rootArg_(nullptr), name_() {}
+		FunctionCallNode(ArgSeqNode* rootArg, std::string name) : rootArg_(rootArg), name_(name) {}
 
-		void SetRootArgNode(ArgSeqNode* node) { m_rootArg = node; }
-		ArgSeqNode* RootArgNode() { return m_rootArg; }
+		void SetRootArgNode(ArgSeqNode* node) { rootArg_ = node; }
+		ArgSeqNode* RootArgNode() { return rootArg_; }
 
 		void AddArg(Node* node) { args_.push_back(node); }
 		std::vector<Node*>& GetArgs() { return args_; }
 
-		void SetName(std::string name) { m_name = name; }
-		std::string& Name() { return m_name; }
+		void SetName(std::string name) { name_ = name; }
+		std::string& Name() { return name_; }
 
 		void SetCallFunction(FunctionDeclNode* node) { callFunc_ = node; }
 		FunctionDeclNode* GetCallFunction() { return callFunc_; }
@@ -539,15 +540,15 @@ namespace ast
 	class Context
 	{
 	private:
-		std::vector<FunctionDeclNode*> functionsDecls;
+		std::vector<FunctionDeclNode*> functionsDecls_;
 
 		// Global score
 		SymbolTable globalTable_;
 
 	public:
-		void AddFunctionDecl(FunctionDeclNode* node) { functionsDecls.push_back(node); }
+		void AddFunctionDecl(FunctionDeclNode* node) { functionsDecls_.push_back(node); }
 
-		std::vector<FunctionDeclNode*>& GetFunctionsDecls() { return functionsDecls; }
+		std::vector<FunctionDeclNode*>& GetFunctionsDecls() { return functionsDecls_; }
 
 		SymbolTable& GetGlobalTable() { return globalTable_; }
 	};

@@ -13,7 +13,7 @@
 
 #include "ASTDotPrinter.hpp"
 
-#include "IR.hpp"
+#include "IL.h"
 
 #include "SLM.h"
 #include "SLAsm.h"
@@ -182,8 +182,7 @@ int main()
 	ast::DotPrinter printer;
 	printer.Print(mainContext, "ast_post_sema", true);
 
-
-	ir::Program* output;
+	il::Program* output;
 
 	slm::AsmBuilder builder;
 
@@ -198,6 +197,7 @@ int main()
 	builder.WriteMov(8, 57, slm::mov_flags::USE_CONSTANT_SRC);
 	builder.WriteBreakPoint();
 	builder.WriteAdd(8, 4);
+	builder.WriteRet();
 
 	slm::ImageInfo program = builder.GetImage();
 

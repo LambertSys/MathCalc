@@ -7,35 +7,30 @@
 class Lexer
 {
 private:
-	std::vector<Token*> tokens;
+	std::vector<Token*> tokens_;
 
-	std::string errorMessage;
-	bool status;
+	std::string errorMessage_;
+	bool status_ = true;
 
 private:
 	DigitToken* ReadDigit(std::string& expression, int& pos);
 	IdToken* ReadId(std::string& expression, int& pos);
 
 public:
-	Lexer() : status(true), errorMessage(), tokens()
-	{
-
-	}
-
 	void Scan(std::string& expression);
 
-	inline bool GetStatus() const
+	bool GetStatus() const
 	{
-		return status;
+		return status_;
 	}
 
-	inline std::string GetErrorMessage() const
+	std::string GetErrorMessage() const
 	{
-		return errorMessage;
+		return errorMessage_;
 	}
 
-	inline std::vector<Token*>& GetTokensList()
+	std::vector<Token*>& GetTokensList()
 	{
-		return tokens;
+		return tokens_;
 	}
 };

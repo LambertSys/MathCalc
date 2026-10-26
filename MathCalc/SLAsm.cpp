@@ -182,11 +182,20 @@ namespace slm
 		WriteInstruction(result);
 	}
 
+	void AsmBuilder::WriteRet()
+	{
+		uint32 result = 0;
+
+		result |= static_cast<uint8>(InstructionType::eRet) & 0xff;
+
+		WriteInstruction(result);
+	}
+
 	void AsmBuilder::WriteBreakPoint()
 	{
 		uint32 result = 0;
 
-		result |= static_cast<uint8>(InstructionType::eBrkPoint) & 0x0f;
+		result |= static_cast<uint8>(InstructionType::eBrkPoint) & 0xff;
 
 		WriteInstruction(result);
 	}

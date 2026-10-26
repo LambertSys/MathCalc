@@ -119,6 +119,14 @@ namespace slm
 		void WriteCall(std::string& funcName);
 
 		/**
+		* Call encoding
+		* opcode - 0...7 bits - 8 bits len
+		* offset - 8...17 bits - 10 bits len
+		* 18...31 - 0-filling
+		*/
+		void WriteRet();
+
+		/**
 		* Breakpoint encoding
 		* opcode - 0...7 bits - 8 bits len
 		* 8...31 bits - zero-filling

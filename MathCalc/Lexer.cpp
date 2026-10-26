@@ -78,8 +78,8 @@ void Lexer::Scan(std::string& expression)
 {
 	if (expression.empty())
 	{
-		errorMessage = "String is empty";
-		status = false;
+		errorMessage_ = "String is empty";
+		status_ = false;
 		return;
 	}
 
@@ -257,8 +257,8 @@ void Lexer::Scan(std::string& expression)
 
 			if (temp == nullptr)
 			{
-				errorMessage += std::string("Undefinded symbol: \"") + expression[i] + std::string("\" in position ") + std::to_string(i + 1) + "\n";
-				status = false;
+				errorMessage_ += std::string("Undefinded symbol: \"") + expression[i] + std::string("\" in position ") + std::to_string(i + 1) + "\n";
+				status_ = false;
 				continue;
 			}
 
@@ -279,8 +279,8 @@ void Lexer::Scan(std::string& expression)
 		}
 		break;
 		case State::Undefined:
-			errorMessage += std::string("Undefinded symbol: \"") + expression[i] + std::string("\" in position ") + std::to_string(i + 1) + "\n";
-			status = false;
+			errorMessage_ += std::string("Undefinded symbol: \"") + expression[i] + std::string("\" in position ") + std::to_string(i + 1) + "\n";
+			status_ = false;
 			continue;
 		break;
 		}
@@ -314,7 +314,7 @@ void Lexer::Scan(std::string& expression)
 			token->line = currentLine;
 			token->location.line = currentLine;
 
-			tokens.push_back(token);
+			tokens_.push_back(token);
 		}
 	}
 }

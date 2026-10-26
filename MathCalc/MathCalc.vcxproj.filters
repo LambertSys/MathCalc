@@ -74,7 +74,7 @@
     <ClInclude Include="Parser.hpp">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="IR.hpp">
+    <ClInclude Include="IL.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
     <ClInclude Include="SymbolTable.hpp">
@@ -87,9 +87,6 @@
       <Filter>Исходные файлы</Filter>
     </ClInclude>
     <ClInclude Include="Report.hpp">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="Transformer.hpp">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
     <ClInclude Include="TypeInfo.hpp">
@@ -122,9 +119,6 @@
     <ClInclude Include="ASTUtils.hpp">
       <Filter>AST</Filter>
     </ClInclude>
-    <ClInclude Include="IRGenerator.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="TypeUtils.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
@@ -146,5 +140,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CHANGES.md" />
+    <None Include="..\README.md" />
   </ItemGroup>
 </Project>

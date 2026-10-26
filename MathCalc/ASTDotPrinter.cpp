@@ -152,7 +152,7 @@ namespace ast
 				break;
 			}
 
-			prefix += " : " + DataTypeToString(opNode->GetDataType());
+			prefix += " : " + DataTypeToString(opNode->GetSemaDataType());
 
 			buffer += "a" + std::to_string(id) + " [label=\"" + prefix + "\" ";
 

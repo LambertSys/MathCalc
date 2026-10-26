@@ -8,15 +8,15 @@ class Lexer;
 class Parser
 {
 private:
-	std::string expression;
+	std::string expression_;
 
-	bool status;
+	bool status_ = true;
 
 	std::string resultCode;
 
-	ast::Context* context_;
+	ast::Context* context_ = nullptr;
 
-	int counter;
+	int counter_ = 0;
 
 private:
 	std::string Traseval(ast::Node* node);
@@ -24,8 +24,8 @@ private:
 	void PrintErrors(Lexer& lexer, ast::Builder& builder);
 
 public:
-	Parser() : status(true), expression(), resultCode(), counter(0) {}
-	Parser(std::string expression) : expression(expression), status(true), resultCode(), counter(0)
+	Parser() = default;
+	Parser(std::string expression) : expression_(expression)
 	{
 
 	}
@@ -37,8 +37,8 @@ public:
 
 	std::string GenerateCode();
 
-	inline bool GetStatus()
+	bool GetStatus()
 	{
-		return status;
+		return status_;
 	}
 };
